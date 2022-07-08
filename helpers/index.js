@@ -9,6 +9,8 @@ export const transactionCalculation  = (transaction) => {
     const initialRatioTotal = splitInfoWithRatioType.reduce((previous, current) => previous + Number(current.SplitValue), 0)
     let initialBalanceB4Ratio;
     let previousBalance = initialAmount;
+    let percentage;
+    let ratio;
 
     let result = {
         "ID": transaction.ID,
@@ -20,16 +22,17 @@ export const transactionCalculation  = (transaction) => {
         previousBalance = previousBalance - element.SplitValue
         result.SplitBreakdown.push({
             "SplitEntityId": element.SplitEntityId,
-            "Amount": previousBalance,
+            "Amount": element.SplitValue,
             initialIndex: element.initialIndex
         })
     });
 
     splitInfoWithPercentageType.forEach(element => {
-        previousBalance = previousBalance - ((element.SplitValue / 100) * previousBalance)
+        percentage = (element.SplitValue / 100) * previousBalance
+        previousBalance = previousBalance - percentage
         result.SplitBreakdown.push({
             "SplitEntityId": element.SplitEntityId,
-            "Amount": previousBalance,
+            "Amount": percentage,
             initialIndex: element.initialIndex
         })
     });
@@ -38,10 +41,11 @@ export const transactionCalculation  = (transaction) => {
         if (index === 0) {
             initialBalanceB4Ratio = previousBalance
         }
-        previousBalance =  previousBalance - ((element.SplitValue / initialRatioTotal) * initialBalanceB4Ratio)
+        ratio = (element.SplitValue / initialRatioTotal) * initialBalanceB4Ratio
+        previousBalance =  previousBalance - ratio
         result.SplitBreakdown.push({
             "SplitEntityId": element.SplitEntityId,
-            "Amount": previousBalance,
+            "Amount": ratio,
             initialIndex: element.initialIndex
         })
     });
